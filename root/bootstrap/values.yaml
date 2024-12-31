@@ -1,7 +1,7 @@
 # Bootstrap ApplicationSet
 root:
   source:
-    repoURL: https://github.com/GalaxyFinX/non-prod-argocd.git
+    repoURL: https://github.com/nhdinh39/argocd-demo.git
     targetRevision: main
 
   bootstrap:
