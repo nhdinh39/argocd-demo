@@ -1,0 +1,43 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: '{{ $.Values.root.argocd.name }}'
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  {{- with or $.Values.root.argocd.annotations }}
+  annotations:
+    {{- toYaml $.Values.root.argocd.annotations | nindent 4 }}
+  {{- end }}
+spec:
+  generators:
+    - git:
+        repoURL: '{{- $.Values.root.source.repoURL }}'
+        revision: '{{- $.Values.root.source.targetRevision }}'
+        directories:
+          - path: "root/argocd/*"
+  template:
+    metadata:
+      name: '{{ `argocd-{{path.basename}}` }}' # project + app name
+    spec:
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: argocd
+      project: argocd
+      source:
+        repoURL: '{{- $.Values.root.source.repoURL }}'
+        targetRevision: '{{- $.Values.root.source.targetRevision }}'
+        path: '{{ `{{path}}` }}'
+        directory:
+          recurse: true
+      syncPolicy:
+        automated:
+          {{- include "bootstrap.automated" (dict "value" $.Values.root.argocd.automated) | indent 10 }}
+        retry:
+          limit: 10
+          backoff:
+            duration: 10s
+            factor: 2
+            maxDuration: 3m
+        syncOptions:
+          {{- include "bootstrap.syncOptions" (dict "value" $.Values.root.argocd.syncOptions) | indent 10 }}

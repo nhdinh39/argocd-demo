@@ -1,0 +1,58 @@
+{{- range $paths := .Values.root.bootstrap.paths }}
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: '{{- $paths }}-{{ $.Values.root.bootstrap.name }}'
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  {{- with or $.Values.root.bootstrap.annotations }}
+  annotations:
+    {{- toYaml $.Values.root.bootstrap.annotations | nindent 4 }}
+  {{- end }}
+spec:
+  generators:
+    - matrix:
+        generators:
+          - git:
+              repoURL: '{{- $.Values.root.source.repoURL }}'
+              revision: '{{- $.Values.root.source.targetRevision }}'
+              directories:
+                - path: "{{- $paths }}/**/*"
+                - path: "**/_exclude/*"
+                  exclude: true
+                - path: "root"
+                  exclude: true
+          - clusters:
+              selector:
+                matchLabels:
+                  argocd.argoproj.io/secret-type: cluster
+                  cluster-name: '{{ `{{path[0]}}` }}'
+  template:
+    metadata:
+      name: '{{ `{{path[0]}}-{{path.basename}}` }}' # project + app name
+      labels:
+        cluster-name: '{{ `{{path[0]}}` }}'
+    spec:
+      destination:
+        server: '{{ `{{server}}` }}'
+        namespace: '{{ `{{path[1]}}` }}'
+      project: '{{ `{{path[0]}}` }}'
+      source:
+        repoURL: '{{- $.Values.root.source.repoURL }}'
+        targetRevision: '{{- $.Values.root.source.targetRevision }}'
+        path: '{{ `{{path}}` }}'
+      syncPolicy:
+        automated:
+          {{- include "bootstrap.automated" (dict "value" $.Values.root.bootstrap.automated) | indent 10 }}
+        retry:
+          limit: 10
+          backoff:
+            duration: 10s
+            factor: 2
+            maxDuration: 3m
+        syncOptions:
+          {{- include "bootstrap.syncOptions" (dict "value" $.Values.root.bootstrap.syncOptions) | indent 10 }}
+      ignoreDifferences:
+        {{- toYaml $.Values.root.bootstrap.ignoreDifferences| nindent 8 }}
+{{- end }}
