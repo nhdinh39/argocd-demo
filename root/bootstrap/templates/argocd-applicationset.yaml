@@ -10,6 +10,7 @@ metadata:
     {{- toYaml $.Values.root.argocd.annotations | nindent 4 }}
   {{- end }}
 spec:
+  project: default
   generators:
     - git:
         repoURL: '{{- $.Values.root.source.repoURL }}'
