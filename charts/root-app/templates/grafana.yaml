@@ -9,9 +9,9 @@ spec:
   source:
     repoURL: https://grafana.github.io/helm-charts
     chart: granfana
-    targetRevision: 8.8.1
-    helm:
-      values: 
+    targetRevision: 8.8.0
+    # helm:
+    #   values: 
   destination:
     server: https://kubernetes.default.svc
     namespace: default
