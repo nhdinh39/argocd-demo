@@ -7,9 +7,9 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://ui.charts.kafbat.io/
-    chart: kafka-ui
-    targetRevision: 1.4.8
+    repoURL: https://provectus.github.io/kafka-ui-charts
+    chart: kafka-ui/kafka-ui
+    targetRevision: 0.7.6
     # helm:
     #   values: 
   destination:
