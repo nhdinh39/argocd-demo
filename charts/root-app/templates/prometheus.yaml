@@ -8,7 +8,7 @@ spec:
   project: default
   source:
     repoURL: https://charts.bitnami.com/bitnami
-    chart: bitnami/nginx
+    chart: nginx
     targetRevision: 18.3.2
     helm:
       values: |
