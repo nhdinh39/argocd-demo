@@ -15,7 +15,7 @@ spec:
         pushgateway:
           enabled: false
         server:
-          replicaCount: 2
+          replicaCount: 1
   destination:
     server: https://kubernetes.default.svc
     namespace: default
