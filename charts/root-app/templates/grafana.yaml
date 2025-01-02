@@ -8,8 +8,8 @@ spec:
   project: default
   source:
     repoURL: https://grafana.github.io/helm-charts
-    chart: granfana
-    targetRevision: 8.8.0
+    chart: grafana
+    # targetRevision: 8.8.0
     # helm:
     #   values: 
   destination:
